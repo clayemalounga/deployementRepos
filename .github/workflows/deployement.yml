@@ -23,6 +23,7 @@ jobs:
         aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws configure set region eu-west-3 
     # teste et ceation du buket
+
     - name: Check if bucket exists 
       run: |
         if aws s3api head-bucket --bucket $AWS_BUCKET_NAME; then
@@ -31,8 +32,17 @@ jobs:
           echo "Bucket does not exist. Stopping the pipeline."
           exit 1
         fi
-    env:
-      AWS_BUCKET_NAME: ${{ secrets.AWS_BUCKET_NAME }}
+      env:
+        AWS_BUCKET_NAME: ${{ secrets.AWS_BUCKET_NAME }}
+
+    - name: Deploy to AWS S3
+      if: success() # utilisée pour s'assurer que le déploiement vers AWS S3 ne se produit que si toutes les étapes précédentes du workflow se sont terminées avec succès. Cela permet d'éviter de déployer des modifications potentiellement invalides ou incomplètes.
+      run: |
+        ls -la
+        aws s3 sync . s3://${{ secrets.AWS_BUCKET_NAME }} --delete --exclude ".git/*" --exclude ".github/*"
+      env:
+        AWS_BUCKET_NAME: ${{ secrets.AWS_BUCKET_NAME }}
+       
 
     #- name: List directory
     #  run: |
