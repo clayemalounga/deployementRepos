@@ -3,7 +3,7 @@ name: "Deployement git hub S3"
 on: 
   push:
     branches:
-      - claye # uniquement sur la branche claye
+      - main # uniquement sur la branche claye
 jobs:
   deployement: # nom que l'on donne au job
     runs-on: ubuntu-latest # instances 
